@@ -1,0 +1,100 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              Int      @id @default(autoincrement())
+  nome            String
+  email           String   @unique
+  senha           String
+  urlImagemPerfil String?
+  CriadoEm        DateTime @default(now())
+  atualizadoEm    DateTime @updatedAt
+  Animal          Animal[]
+}
+
+model Animal {
+  id              Int             @id @default(autoincrement())
+  nome            String
+  dataNascimento  DateTime?
+  urlImagemPerfil String?
+  userId          Int
+  criadoEm        DateTime        @default(now())
+  atualizadoEm    DateTime        @updatedAt
+  user            User            @relation(fields: [userId], references: [id])
+  Pesagem         Pesagem[]
+  Vacinacao       Vacinacao[]
+  Tratamento      Tratamento[]
+  Suplementacao   Suplementacao[]
+  BanhoTosa       BanhoTosa[]
+}
+
+model Pesagem {
+  id           Int      @id @default(autoincrement())
+  peso         Decimal
+  dataPesagem  DateTime
+  observacoes  String?
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+  animalId     Int
+  animal       Animal   @relation(fields: [animalId], references: [id])
+}
+
+model Vacinacao {
+  id                   Int       @id @default(autoincrement())
+  nomeVacina           String
+  dataAplicacao        DateTime
+  dataProximaAplicacao DateTime?
+  observacoes          String?
+  criadoEm             DateTime  @default(now())
+  atualizadoEm         DateTime  @updatedAt
+  animalId             Int
+  animal               Animal    @relation(fields: [animalId], references: [id])
+}
+
+model Tratamento {
+  id                   Int       @id @default(autoincrement())
+  tipoTratamento       String // [Anti-pulgas, anti-carrapatos, Vermifugação, Controle de Ectoparasitas]
+  dataAplicacao        DateTime
+  dataProximaAplicacao DateTime?
+  observacoes          String?
+  criadoEm             DateTime  @default(now())
+  atualizadoEm         DateTime  @updatedAt
+  animalId             Int
+  animal               Animal    @relation(fields: [animalId], references: [id])
+}
+
+model Suplementacao {
+  id                   Int       @id @default(autoincrement())
+  tipoSuplementacao    String // {Vitaminas, sais minerias, suplementos}
+  numeroDoses          Int
+  dataAplicacao        DateTime
+  dataProximaAplicacao DateTime?
+  observacoes          String?
+  criadoEm             DateTime  @default(now())
+  atualizadoEm         DateTime  @updatedAt
+  animalId             Int
+  animal               Animal    @relation(fields: [animalId], references: [id])
+}
+
+model BanhoTosa {
+  id           Int      @id @default(autoincrement())
+  executor     String?
+  dataServico  DateTime
+  observacoes  String?
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+  animalId     Int
+  animal       Animal   @relation(fields: [animalId], references: [id])
+}
